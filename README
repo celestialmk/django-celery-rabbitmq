@@ -1,0 +1,18 @@
+
+# Build images
+docker-compose up -d --build 
+
+# Access python shell from docker image
+docker-compose exec django python manage.py shell
+
+
+entrypoint.sh file to the "app" directory to verify that Postgres is healthy 
+before applying the migrations and running the Django development server:
+
+
+# Bring down dev containers with associated volumes
+docker-compose down -v
+
+
+# Build production images and spin up containers
+docker-compose -f docker-compose.prod.yml up -d --build
