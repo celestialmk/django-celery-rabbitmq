@@ -1,0 +1,91 @@
+version: "3.8"
+   
+services:
+    django:
+        build: 
+          context: .
+          dockerfile: Dockerfile.prod
+        container_name: django
+        command: gunicorn djcera.wsgi:application --bind 0.0.0.0:8000
+        volumes:
+            - static_volume:/home/app/web/staticfiles
+            - media_volume:/home/app/web/mediafiles
+        expose:
+            - 8000
+        env_file:
+            - ./.env.staging
+        environment:
+            - CELERY_BROKER=redis://redis:6379/0
+        depends_on:
+            - db
+            - redis
+    celery:
+        build: .
+        command: celery -A djcera worker -l INFO
+        volumes:
+            - .:/usr/src/app
+        environment:
+            - DEBUG=1
+            - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+            - CELERY_BROKER=redis://redis:6379/0
+        depends_on:
+            - django
+            - redis 
+    redis:
+        image: "redis:alpine"
+
+    db:
+      image: postgres
+      volumes:
+        - postgres_data:/var/lib/postgresql/data/
+      env_file:
+        - ./.env.staging.db
+
+    nginx:
+      build: ./nginx
+
+      volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
+
+      ports:
+        - 1337:80
+      depends_on:
+        - django
+    nginx-proxy:
+      container_name: nginx-proxy
+      build: nginx
+      restart: always
+      ports:
+        - 443:443
+        - 80:80
+      volumes:
+        - static_volume:/home/app/web/staticfiles
+        - media_volume:/home/app/web/mediafiles
+        - certs:/etc/nginx/certs
+        - html:/usr/share/nginx/html
+        - vhost:/etc/nginx/vhost.d
+        - /var/run/docker.sock:/tmp/docker.sock:ro
+      depends_on:
+        - web
+    acme-companion:
+      image: nginxproxy/acme-companion
+      env_file:
+        - ./.env.staging.proxy-companion
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+        - certs:/etc/nginx/certs
+        - html:/usr/share/nginx/html
+        - vhost:/etc/nginx/vhost.d
+        - acme:/etc/acme.sh
+      depends_on:
+        - nginx-proxy
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+  certs:
+  html:
+  vhost:
+  acme:

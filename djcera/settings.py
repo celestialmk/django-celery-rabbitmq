@@ -152,3 +152,7 @@ CELERY_RESULT_BACKEND = "redis://redis:6379/0"
 
 CELERY_CACHE_BACKEND = 'django-cache'
 
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(" ")
+
