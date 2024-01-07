@@ -16,3 +16,6 @@ docker-compose down -v
 
 # Build production images and spin up containers
 docker-compose -f docker-compose.prod.yml up -d --build
+
+# Pull code
+git pull git@github.com:celestialmk/django-celery-rabbitmq.git main
