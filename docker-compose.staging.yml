@@ -67,7 +67,7 @@ services:
         - vhost:/etc/nginx/vhost.d
         - /var/run/docker.sock:/tmp/docker.sock:ro
       depends_on:
-        - web
+        - django
     acme-companion:
       image: nginxproxy/acme-companion
       env_file:
