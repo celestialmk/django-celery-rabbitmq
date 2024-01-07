@@ -111,6 +111,9 @@ venv.bak/
 .env.dev
 .env.prod
 .env.prod.db
+.env.staging
+.env.staging.db
+.env.staging.proxy-companion
 
 # mkdocs documentation 
 /site 
