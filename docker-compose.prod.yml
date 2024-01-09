@@ -46,7 +46,7 @@ services:
       build: nginx
       restart: always
       ports:
-        - 8443:8443
+        - 8443:443
         - 81:80
       volumes:
         - static_volume:/home/app/web/staticfiles
