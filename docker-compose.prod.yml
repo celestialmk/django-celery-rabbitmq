@@ -47,7 +47,7 @@ services:
       restart: always
       ports:
         - 8443:8443
-        - 80:80
+        - 81:80
       volumes:
         - static_volume:/home/app/web/staticfiles
         - media_volume:/home/app/web/mediafiles
